@@ -1,0 +1,17 @@
+name: githubworkflows
+
+run-name: ${{github.actor}} has made this cool file.
+
+on: [push]
+
+jobs:
+
+
+  format-code:
+
+    runs-on: ununtu-latest
+
+
+    steps:
+      
+      - run: ../../unittests/test_data.py
