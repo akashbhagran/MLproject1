@@ -9,7 +9,7 @@ class Data():
                 data : str = 'cifar10',
                 batch_size: int = 100):
     
-        self.data = data,
+        self.data_name_ = data,
         self.batch_size = batch_size
     
     def transform_train(self):
