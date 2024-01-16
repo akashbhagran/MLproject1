@@ -6,7 +6,7 @@ on: [push]
 
 jobs:
 
-  image: python:3.8
+  #image: python:3.8
 
   format-code:
 
