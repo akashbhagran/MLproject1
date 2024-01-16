@@ -2,5 +2,5 @@
 
 cd ../model
 
-python -m black data.py
-python -m black train.py
+black .
+black train.py

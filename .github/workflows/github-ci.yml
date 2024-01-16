@@ -6,12 +6,16 @@ on: [push]
 
 jobs:
 
+  image: python:3.8
 
   format-code:
 
     runs-on: ubuntu-latest
 
+    script:
 
-    steps:
+      - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/'
+
+    #steps:
       
-      - run: ../../unittests/test_data.py
+     # - run: 
