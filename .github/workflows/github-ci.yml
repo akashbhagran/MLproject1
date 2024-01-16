@@ -12,10 +12,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    script:
+    #script:
 
-      - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/'
+    #  - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/'
 
-    #steps:
+    steps:
       
-     # - run: 
+      - run: - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/' 
