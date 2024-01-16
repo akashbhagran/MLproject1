@@ -9,7 +9,7 @@ jobs:
 
   format-code:
 
-    runs-on: ununtu-latest
+    runs-on: ubuntu-latest
 
 
     steps:
