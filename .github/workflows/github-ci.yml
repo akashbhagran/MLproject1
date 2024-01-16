@@ -12,10 +12,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #script:
-
-    #  - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/'
-
     steps:
-      
-      - run: - black . --check --exclude '\.venv/|\.local/|\.cache/|\.git/' 
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
