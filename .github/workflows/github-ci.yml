@@ -16,3 +16,7 @@ jobs:
       - run: pip install black
       - run: chmod +x ./reformat.sh
       - run: source reformat.sh
+      - run: git add .
+      - run: git commit -m "Auto-Reformat"
+      - run: echo "git fetch origin ${GITHUB_REF##*/}"
+      - run: git push origin ${GITHUB_REF##*/}
