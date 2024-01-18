@@ -12,9 +12,11 @@ import numpy as np
 
 
 import torchvision.datasets as datasets
+
 import torchvision.transforms as transforms
 
 import data
+
 
 
 if __name__ == "__main__":
@@ -121,7 +123,6 @@ if __name__ == "__main__":
                 avg_loss_val,
                 "  ",
                 "ACC_VAL_epoch {}: ".format(epoch),
-                avg_acc_val,
-            )
+                avg_acc_val,)
             acc_val.append(avg_acc_val)
             loss_val.append(np.mean(avg_loss_val))
