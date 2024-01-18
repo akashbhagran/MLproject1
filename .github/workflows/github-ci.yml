@@ -1,4 +1,5 @@
-name: githubworkflows
+#image: continuumio/miniconda3:latest
+name: format
 
 run-name: ${{github.actor}} has made this cool file.
 
@@ -6,12 +7,12 @@ on: [push]
 
 jobs:
 
-  #image: python:3.8
-
   format-code:
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: psf/black@stable
+      - run: pip install black
+      - run: chmod +x ./reformat.sh
+      - run: source reformat.sh

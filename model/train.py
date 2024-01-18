@@ -17,7 +17,6 @@ import torchvision.transforms as transforms
 import data
 
 
-
 if __name__ == "__main__":
     # get data
     batch_size = 100
