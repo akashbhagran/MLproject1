@@ -12,10 +12,10 @@ import numpy as np
 
 
 import torchvision.datasets as datasets
+
 import torchvision.transforms as transforms
 
 import data
-
 
 
 if __name__ == "__main__":

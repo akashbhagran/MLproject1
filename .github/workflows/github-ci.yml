@@ -1,4 +1,5 @@
-name: githubworkflows
+#image: continuumio/miniconda3:latest
+name: format
 
 run-name: ${{github.actor}} has made this cool file.
 
@@ -6,12 +7,18 @@ on: [push]
 
 jobs:
 
-
   format-code:
 
-    runs-on: ununtu-latest
-
+    runs-on: ubuntu-latest
 
     steps:
-      
-      - run: ../../unittests/test_data.py
+      - uses: actions/checkout@v4
+      - run: pip install black
+      - run: chmod +x ./reformat.sh
+      - run: source reformat.sh
+      - run: git add .
+      - run: git config --global user.email "akash.bhagran@hotmail.com"
+      - run: git config --global user.name "Akash Bhagran"
+      - run: git commit -m "Auto-Reformat"
+      - run: echo "git fetch origin ${GITHUB_REF##*/}"
+      - run: git push origin ${GITHUB_REF##*/}
