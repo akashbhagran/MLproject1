@@ -7,6 +7,18 @@ on: [push]
 
 jobs:
 
+  unit-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          pip install pytest
+          pip install torchvision
+          pip install torch
+      - run: pytest
+
   format-code:
 
     runs-on: ubuntu-latest
@@ -22,15 +34,3 @@ jobs:
       - run: git commit -m "Auto-Reformat"
       - run: echo "git fetch origin ${GITHUB_REF##*/}"
       - run: git push origin ${GITHUB_REF##*/}
-  
-  unit-tests:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          pip install pytest
-          pip install torchvision
-          pip install torch
-      - run: pytest
