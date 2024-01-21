@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: coverage run -m pytest  -v -s
-      - run: coverage report -m
-
-      #- name: run pylint
-      #- run: python -m pip install --upgrade pip
-      #- run:  pip install pylint
-      #- run: pylint $(git ls-files '*.py')
+      - uses: actions/checkout@v4
+      - run: |
+          pip install pytest
+          pip install typing-extensions
+          pip install torchvision
+          pip install torch
+      - run: pytest

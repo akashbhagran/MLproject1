@@ -1,10 +1,14 @@
 import pytest
+import os
 import sys
 
-sys.path.insert(1, "C:\\Users\\akash\\Documents\\MLProjects\\MLproject1\\model")
+PATH = os.getcwd() + '/model'
+
+print(PATH)
+
+sys.path.append(PATH)
 
 from data import Data
-
 
 @pytest.mark.parametrize("batch_size, expected", [(100, 100), (100, 100)])
 def test_data(batch_size, expected):
