@@ -13,7 +13,13 @@ from data import Data
 
 
 @pytest.mark.parametrize("batch_size, expected", [(100, 100), (100, 100)])
+
 def test_data(batch_size, expected):
+
+
+
+
+
     d = Data(batch_size=batch_size)
 
     train, val = d.make_data()
