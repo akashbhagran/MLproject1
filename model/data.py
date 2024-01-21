@@ -1,4 +1,3 @@
-from typing import Self
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import torch
