@@ -29,8 +29,8 @@ jobs:
       - run: chmod +x ./reformat.sh
       - run: source reformat.sh
       - run: git add .
-      - run: git config --global user.email "akash.bhagran@hotmail.com"
-      - run: git config --global user.name "Akash Bhagran"
+      - run: git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      - run: git config --global user.name "github-actions[bot]"
       - run: git commit -m "Auto-Reformat"
       - run: echo "git fetch origin ${GITHUB_REF##*/}"
       - run: git push origin ${GITHUB_REF##*/}
