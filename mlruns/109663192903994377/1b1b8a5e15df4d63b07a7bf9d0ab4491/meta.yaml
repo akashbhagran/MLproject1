@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/109663192903994377/1b1b8a5e15df4d63b07a7bf9d0ab4491/artifacts
+end_time: 1707342470680
+entry_point_name: ''
+experiment_id: '109663192903994377'
+lifecycle_stage: active
+run_id: 1b1b8a5e15df4d63b07a7bf9d0ab4491
+run_name: dapper-crow-535
+run_uuid: 1b1b8a5e15df4d63b07a7bf9d0ab4491
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707342416776
+status: 4
+tags: []
+user_id: akash

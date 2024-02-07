@@ -9,13 +9,18 @@ import torch.optim as optim
 from torch import nn
 from tqdm import tqdm
 import numpy as np
-
-
 import torchvision.datasets as datasets
-
 import torchvision.transforms as transforms
-
 import data
+from torcheval.metrics import MulticlassPrecision, MulticlassAccuracy, MulticlassRecall
+import mlflow
+
+metricP = MulticlassPrecision(average = 'macro',num_classes=10)
+metricR = MulticlassRecall(average = 'macro',num_classes=10)
+
+mlflow.set_tracking_uri(uri = 'http://127.0.0.2:8090')
+mlflow.set_experiment('First Run')
+
 
 
 if __name__ == "__main__":
@@ -26,9 +31,11 @@ if __name__ == "__main__":
     len_train, len_val = d.get_length()
 
     # define model
-    resnet50(weights=ResNet50_Weights.DEFAULT)
+    #resnet50(weights=ResNet50_Weights.DEFAULT,num_classes = 10)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = resnet50()
+    model = resnet50(num_classes = 10)
+
+    print(model.fc.out_features)
 
     model.to(device)
     criterion = nn.CrossEntropyLoss()
@@ -40,90 +47,115 @@ if __name__ == "__main__":
     loss_train = []
     acc_val = []
     loss_val = []
+    prec_train = []
+    rec_train = []
 
-    for epoch in range(epochs):  # loop over the dataset multiple times
-        with tqdm(total=len(trainloader)) as pbar_train:
-            model.train()
-            train_acc_collect = []
-            train_loss_collect = []
+    with mlflow.start_run():
 
-            for i, data in enumerate(trainloader, 0):
-                # get the inputs; data is a list of [inputs, labels]
+        for epoch in range(epochs):  # loop over the dataset multiple times
+            with tqdm(total=len(trainloader)) as pbar_train:
+                model.train()
+                train_acc_collect = []
+                train_loss_collect = []
+                precision_collect = []
+                recall_collect = []
 
-                inputs, labels = data
-                inputs = inputs.cuda()
-                labels = labels.cuda()
+                for i, data in enumerate(trainloader, 0):
+                    # get the inputs; data is a list of [inputs, labels]
 
-                # zero the parameter gradients
+                    inputs, labels = data
+                    inputs = inputs.cuda()
+                    labels = labels.cuda()
 
-                optimizer.zero_grad()
+                    print(labels.size())
 
-                # forward + backward + optimize
+                    # zero the parameter gradients
 
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
+                    optimizer.zero_grad()
 
-                # print statistics
+                    # forward + backward + optimize
 
-                _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
-                accuracy = np.mean(
-                    list(predicted.eq(labels.data).cpu())
-                )  # compute accuracy
-                train_acc_collect.append(accuracy)
-                train_loss_collect.append(loss.cpu().data.numpy())
+                    outputs = model(inputs)
+                    loss = criterion(outputs, labels)
+                    loss.backward()
+                    optimizer.step()
 
-                # print('LOSS_TRAIN: ',loss.cpu().data.numpy(),'  ','ACC_TRAIN: ',accuracy, flush = True)
+                    # print statistics
 
-                pbar_train.update(1)
-                pbar_train.set_description("Iterations")
+                    _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
+                    accuracy = np.mean(
+                        list(predicted.eq(labels.data).cpu())
+                    )  # compute accuracy
+                    train_acc_collect.append(accuracy)
+                    train_loss_collect.append(loss.cpu().data.numpy())
 
-            avg_acc_train = np.mean(train_acc_collect)
-            avg_loss_train = np.mean(train_loss_collect)
-            print(
-                "LOSS_TRAIN_epoch {}: ".format(epoch),
-                avg_acc_train,
-                "  ",
-                "ACC_TRAIN_epoch {}: ".format(epoch),
-                avg_loss_train,
-            )
-            acc_train.append(avg_acc_train)
-            loss_train.append(avg_loss_train)
+                    metricP.update(predicted,labels)
+                    metricR.update(predicted,labels)
 
-        with tqdm(total=len(valloader)) as pbar_val:
-            model.eval()
-            vall_acc_collect = []
-            vall_loss_collect = []
+                    precision_collect.append(float(metricP.compute().detach()))
+                    recall_collect.append(float(metricR.compute().detach()))
 
-            for i, data in enumerate(valloader, 0):
-                # get the inputs; data is a list of [inputs, labels]
+                    pbar_train.update(1)
+                    pbar_train.set_description("Iterations")
 
-                inputs, labels = data
-                inputs = inputs.cuda()
-                labels = labels.cuda()
+                avg_acc_train = np.mean(train_acc_collect)
+                avg_loss_train = np.mean(train_loss_collect)
+                avg_prec_train = np.mean(precision_collect)
+                avg_rec_train =  np.mean(recall_collect)
 
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
+                print(
+                    "LOSS_TRAIN_epoch {}: ".format(epoch),
+                    avg_acc_train,
+                    "  ",
+                    "ACC_TRAIN_epoch {}: ".format(epoch),
+                    avg_loss_train,
+                )
 
-                _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
-                accuracy = np.mean(
-                    list(predicted.eq(labels.data).cpu())
-                )  # compute accuracy
-                vall_acc_collect.append(accuracy)
-                vall_loss_collect.append(loss.cpu().data.numpy())
+                acc_train.append(avg_acc_train)
+                loss_train.append(avg_loss_train)
+                prec_train.append(avg_prec_train)
+                rec_train.append(avg_rec_train)
 
-                pbar_val.update(1)
-                pbar_val.set_description("Iterations")
+                if epoch == epochs-1:
+                    mlflow.log_metric("accuracyT", acc_train[-1])
+                    mlflow.log_metric("precisionT",prec_train[-1])
+                    mlflow.log_metric("recallT",rec_train[-1])
 
-            avg_acc_val = np.mean(vall_acc_collect)
-            avg_loss_val = np.mean(vall_loss_collect)
-            print(
-                "LOSS_VAL_epoch {}: ".format(epoch),
-                avg_loss_val,
-                "  ",
-                "ACC_VAL_epoch {}: ".format(epoch),
-                avg_acc_val,
-            )
-            acc_val.append(avg_acc_val)
-            loss_val.append(np.mean(avg_loss_val))
+            with tqdm(total=len(valloader)) as pbar_val:
+                model.eval()
+                vall_acc_collect = []
+                vall_loss_collect = []
+
+                for i, data in enumerate(valloader, 0):
+                    # get the inputs; data is a list of [inputs, labels]
+
+                    inputs, labels = data
+                    inputs = inputs.cuda()
+                    labels = labels.cuda()
+
+                    outputs = model(inputs)
+                    loss = criterion(outputs, labels)
+
+                    _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
+                    accuracy = np.mean(
+                        list(predicted.eq(labels.data).cpu())
+                    )  # compute accuracy
+                    vall_acc_collect.append(accuracy)
+                    vall_loss_collect.append(loss.cpu().data.numpy())
+
+                    pbar_val.update(1)
+                    pbar_val.set_description("Iterations")
+
+                avg_acc_val = np.mean(vall_acc_collect)
+                avg_loss_val = np.mean(vall_loss_collect)
+                print(
+                    "LOSS_VAL_epoch {}: ".format(epoch),
+                    avg_loss_val,
+                    "  ",
+                    "ACC_VAL_epoch {}: ".format(epoch),
+                    avg_acc_val,
+                )
+                acc_val.append(avg_acc_val)
+                loss_val.append(np.mean(avg_loss_val))
+
+    mlflow.end_run()
