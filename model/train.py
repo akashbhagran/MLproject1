@@ -23,12 +23,12 @@ from classifiers import get_cco
 
 # Load config
 
-with open('config.json') as f:
+with open("config.json") as f:
 
     config = json.load(f)
 
 # Load model and optimizers etc
- 
+
 objects = get_cco()
 model = objects.make_model()
 optimizer = objects.select_optimizer()
@@ -36,19 +36,19 @@ criterion = objects.define_criterion()
 
 # epochs
 
-epochs = config['epochs']
-batch_size = config['batch_size']
+epochs = config["epochs"]
+batch_size = config["batch_size"]
 
 # MLFLOW settings
 
-mlflow.set_tracking_uri(uri = 'http://127.0.0.2:8090')
-mlflow.set_experiment('First Run')
+mlflow.set_tracking_uri(uri="http://127.0.0.2:8090")
+mlflow.set_experiment("First Run")
 
 # main
 
 if __name__ == "__main__":
     # get data
-    
+
     d = data.Data(batch_size=batch_size)
     trainloader, valloader = d.make_data()
     len_train, len_val = d.get_length()
@@ -62,10 +62,10 @@ if __name__ == "__main__":
     prec_train = []
     rec_train = []
 
-    #define metrics precision and recall
+    # define metrics precision and recall
 
-    metricP = MulticlassPrecision(average = 'macro',num_classes=10)
-    metricR = MulticlassRecall(average = 'macro',num_classes=10)
+    metricP = MulticlassPrecision(average="macro", num_classes=10)
+    metricR = MulticlassRecall(average="macro", num_classes=10)
 
     with mlflow.start_run():
 
@@ -101,15 +101,17 @@ if __name__ == "__main__":
 
                     # print statistics
 
-                    _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
+                    _, predicted = torch.max(
+                        outputs.data, 1
+                    )  # get argmax of predictions
                     accuracy = np.mean(
                         list(predicted.eq(labels.data).cpu())
                     )  # compute accuracy
                     train_acc_collect.append(accuracy)
                     train_loss_collect.append(loss.cpu().data.numpy())
 
-                    metricP.update(predicted,labels)
-                    metricR.update(predicted,labels)
+                    metricP.update(predicted, labels)
+                    metricR.update(predicted, labels)
 
                     precision_collect.append(float(metricP.compute().detach()))
                     recall_collect.append(float(metricR.compute().detach()))
@@ -120,7 +122,7 @@ if __name__ == "__main__":
                 avg_acc_train = np.mean(train_acc_collect)
                 avg_loss_train = np.mean(train_loss_collect)
                 avg_prec_train = np.mean(precision_collect)
-                avg_rec_train =  np.mean(recall_collect)
+                avg_rec_train = np.mean(recall_collect)
 
                 print(
                     "LOSS_TRAIN_epoch {}: ".format(epoch),
@@ -135,10 +137,10 @@ if __name__ == "__main__":
                 prec_train.append(avg_prec_train)
                 rec_train.append(avg_rec_train)
 
-                if epoch == epochs-1:
+                if epoch == epochs - 1:
                     mlflow.log_metric("accuracyT", acc_train[-1])
-                    mlflow.log_metric("precisionT",prec_train[-1])
-                    mlflow.log_metric("recallT",rec_train[-1])
+                    mlflow.log_metric("precisionT", prec_train[-1])
+                    mlflow.log_metric("recallT", rec_train[-1])
 
             with tqdm(total=len(valloader)) as pbar_val:
                 model.eval()
@@ -155,7 +157,9 @@ if __name__ == "__main__":
                     outputs = model(inputs)
                     loss = criterion(outputs, labels)
 
-                    _, predicted = torch.max(outputs.data, 1)  # get argmax of predictions
+                    _, predicted = torch.max(
+                        outputs.data, 1
+                    )  # get argmax of predictions
                     accuracy = np.mean(
                         list(predicted.eq(labels.data).cpu())
                     )  # compute accuracy

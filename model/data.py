@@ -3,12 +3,13 @@ import torchvision.transforms as transforms
 import torch
 import json
 
-with open('config.json') as f:
+with open("config.json") as f:
     config = json.load(f)
 
-batch_size = config['batch_size']
-data = config['data']
-root = config['data_root']
+batch_size = config["batch_size"]
+data = config["data"]
+root = config["data_root"]
+
 
 class Data:
 
