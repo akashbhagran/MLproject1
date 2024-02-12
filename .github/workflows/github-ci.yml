@@ -4,8 +4,8 @@ run-name: ${{github.actor}} has made this cool file.
 
 on:
   pull_request:
-    branches:
-      - master
+    types:
+      - opened
 
 jobs:
 
