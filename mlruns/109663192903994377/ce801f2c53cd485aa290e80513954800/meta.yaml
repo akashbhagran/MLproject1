@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/109663192903994377/ce801f2c53cd485aa290e80513954800/artifacts
+end_time: 1707346109639
+entry_point_name: ''
+experiment_id: '109663192903994377'
+lifecycle_stage: active
+run_id: ce801f2c53cd485aa290e80513954800
+run_name: gifted-carp-255
+run_uuid: ce801f2c53cd485aa290e80513954800
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1707345777924
+status: 3
+tags: []
+user_id: akash

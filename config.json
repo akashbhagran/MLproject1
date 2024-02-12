@@ -1,0 +1,15 @@
+{
+    "data": "cifar10",
+    "data_root":"./data",
+    "batch_size": 100,
+    "model": "resnet50",
+    "num_classes": 10,
+    "epochs": 3,
+    "validation":false,
+    "optimizer": "sgd",
+    "criterion":"crossentropy",
+    "learning_rate": 0.001,
+    "momentum": 0.9,
+    "weight_decay": 0.0000001,
+    "save": true
+}

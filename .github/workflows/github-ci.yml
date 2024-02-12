@@ -1,9 +1,11 @@
-#image: continuumio/miniconda3:latest
 name: format
 
 run-name: ${{github.actor}} has made this cool file.
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - master
 
 jobs:
 
