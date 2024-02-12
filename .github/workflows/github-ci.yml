@@ -1,6 +1,6 @@
 name: format
 
-run-name: ${{github.actor}} has made this cool file.
+run-name: pytests and formatting
 
 on:
   pull_request:
@@ -30,6 +30,7 @@ jobs:
       - run: pip install black
       - run: chmod +x ./reformat.sh
       - run: source reformat.sh
+      - run: echo ${GITHUB_REF##*/}
       - run: git add .
       - run: git config --global user.email 'github-actions[bot]@users.noreply.github.com'
       - run: git config --global user.name "github-actions[bot]"
