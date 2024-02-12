@@ -1,12 +1,16 @@
+"""
+train.py
+
+Trains the classifier and logs results.
+
+"""
+
+# Imports
+
 import torch
-from torchvision.models.detection import retinanet_resnet50_fpn
 from torchvision.ops import batched_nms
 from torchvision.transforms import functional as F
-from PIL import Image
 from torch.utils.data import DataLoader
-from torchvision.models import resnet50, ResNet50_Weights
-import torch.optim as optim
-from torch import nn
 from tqdm import tqdm
 import numpy as np
 import torchvision.datasets as datasets
@@ -14,34 +18,42 @@ import torchvision.transforms as transforms
 import data
 from torcheval.metrics import MulticlassPrecision, MulticlassAccuracy, MulticlassRecall
 import mlflow
+import json
+from classifiers import get_cco
 
-metricP = MulticlassPrecision(average = 'macro',num_classes=10)
-metricR = MulticlassRecall(average = 'macro',num_classes=10)
+# Load config
+
+with open('config.json') as f:
+
+    config = json.load(f)
+
+# Load model and optimizers etc
+ 
+objects = get_cco()
+model = objects.make_model()
+optimizer = objects.select_optimizer()
+criterion = objects.define_criterion()
+
+# epochs
+
+epochs = config['epochs']
+batch_size = config['batch_size']
+
+# MLFLOW settings
 
 mlflow.set_tracking_uri(uri = 'http://127.0.0.2:8090')
 mlflow.set_experiment('First Run')
 
-
+# main
 
 if __name__ == "__main__":
     # get data
-    batch_size = 100
+    
     d = data.Data(batch_size=batch_size)
     trainloader, valloader = d.make_data()
     len_train, len_val = d.get_length()
 
-    # define model
-    #resnet50(weights=ResNet50_Weights.DEFAULT,num_classes = 10)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = resnet50(num_classes = 10)
-
-    print(model.fc.out_features)
-
-    model.to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
-    epochs = 2
+    # collect metrics through arrays.
 
     acc_train = []
     loss_train = []
@@ -50,7 +62,14 @@ if __name__ == "__main__":
     prec_train = []
     rec_train = []
 
+    #define metrics precision and recall
+
+    metricP = MulticlassPrecision(average = 'macro',num_classes=10)
+    metricR = MulticlassRecall(average = 'macro',num_classes=10)
+
     with mlflow.start_run():
+
+        mlflow.log_params(config)
 
         for epoch in range(epochs):  # loop over the dataset multiple times
             with tqdm(total=len(trainloader)) as pbar_train:

@@ -1,10 +1,18 @@
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import torch
+import json
 
+with open('config.json') as f:
+    config = json.load(f)
+
+batch_size = config['batch_size']
+data = config['data']
+root = config['data_root']
 
 class Data:
-    def __init__(self, data: str = "cifar10", batch_size: int = 100):
+
+    def __init__(self, data: str = data, batch_size: int = batch_size):
         self.data_name_ = (data,)
         self.batch_size = batch_size
 
@@ -32,7 +40,7 @@ class Data:
 
     def make_data(self):
         self.train = datasets.CIFAR10(
-            root="./data", train=True, download=True, transform=self.transform_train()
+            root=root, train=True, download=True, transform=self.transform_train()
         )
 
         print(len(self.train))
@@ -40,7 +48,7 @@ class Data:
         self.len_train = len(self.train)
 
         self.val = datasets.CIFAR10(
-            root="./data", train=False, download=True, transform=self.transform_val()
+            root=root, train=False, download=True, transform=self.transform_val()
         )
 
         self.len_val = len(self.val)
