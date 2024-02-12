@@ -2,10 +2,7 @@ name: format
 
 run-name: pytests and formatting
 
-on:
-  pull_request:
-    types:
-      - opened
+on: [push]
 
 jobs:
 
@@ -15,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: |
+      - run:
           pip install pytest
           pip install torchvision
           pip install torch
