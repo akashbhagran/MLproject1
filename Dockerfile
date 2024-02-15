@@ -9,7 +9,7 @@ RUN pip install torch torchvision && \
     pip install numpy && \
     pip install tqdm && \
     pip install torcheval
-    
+
 
 COPY . .
 
