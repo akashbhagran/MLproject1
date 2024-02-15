@@ -10,6 +10,7 @@ RUN pip install torch torchvision && \
     pip install tqdm && \
     pip install torcheval
 
+
 COPY . .
 
 SHELL ["conda", "run", "--name", "images", "/bin/bash", "-c"]
